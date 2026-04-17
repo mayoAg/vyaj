@@ -131,6 +131,13 @@ button.convert {
 let mode = "g";
 const GRAMS_PER_TOLA = 11.6638038;
 
+function formatToIndianCurrency(amount) {
+    if (isNaN(amount)) return amount;
+    let num = Number(amount);
+    let [integerPart, decimalPart] = num.toString().split('.');
+    integerPart = integerPart.replace(/\B(?=(\d{2})+(?!\d))/g, ","); // Add commas for lacs and crores
+    return integerPart + (decimalPart ? '.' + decimalPart : '');
+}
 function setMode(m) {
     mode = m;
 
@@ -147,8 +154,8 @@ function setMode(m) {
 }
 
 function updatePriceInfo() {
-    let rate = parseFloat(document.getElementById("goldRate").value);
-    let per10g = rate * 10;
+    let rate = formatToIndianCurrency(parseFloat(document.getElementById("goldRate").value));
+    let per10g = formatToIndianCurrency(rate * 10);
 
     document.getElementById("priceInfo").innerHTML = 
         "₹" + rate.toFixed(2) + "/g  |  ₹" + per10g.toFixed(0) + "/10g";
@@ -174,14 +181,14 @@ function convert() {
         document.getElementById("result").innerHTML =
             "<strong>" + totalTola.toFixed(4) + " Tola</strong><br>" +
             tola + " Tola " + anna + " Anna " + ratti + " Ratti<br><br>" +
-            "₹" + price.toFixed(2);
+            "₹" + formatToIndianCurrency(price.toFixed(2));
     } else {
         let grams = value * GRAMS_PER_TOLA;
         let price = grams * rate;
 
         document.getElementById("result").innerHTML =
             "<strong>" + grams.toFixed(4) + " grams</strong><br><br>" +
-            "₹" + price.toFixed(2);
+            "₹" + formatToIndianCurrency(price.toFixed(2));
     }
 }
 
