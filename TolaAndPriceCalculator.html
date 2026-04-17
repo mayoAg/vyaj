@@ -132,11 +132,7 @@ let mode = "g";
 const GRAMS_PER_TOLA = 11.6638038;
 
 function formatToIndianCurrency(amount) {
-    if (isNaN(amount)) return amount;
-    let num = Number(amount);
-    let [integerPart, decimalPart] = num.toString().split('.');
-    integerPart = integerPart.replace(/\B(?=(\d{2})+(?!\d))/g, ","); // Add commas for lacs and crores
-    return integerPart + (decimalPart ? '.' + decimalPart : '');
+    return new Intl.NumberFormat('en-IN').format(amount) + '/-';
 }
 function setMode(m) {
     mode = m;
