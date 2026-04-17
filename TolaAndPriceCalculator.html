@@ -177,11 +177,15 @@ function convert() {
         let anna = Math.floor((totalTola - tola) * 16);
         let ratti = Math.round((((totalTola - tola) * 16) - anna) * 6);
 
-        let price = (value * rate) + banwai;
+        let goldPrice = (value * rate);
+        let price = goldPrice + banwai;
 
         document.getElementById("result").innerHTML =
             "<strong>" + totalTola.toFixed(4) + " Tola</strong><br>" +
             tola + " Tola " + anna + " Anna " + ratti + " Ratti<br><br>" +
+            "<h5>Bill</h5><br><br>" +
+            "  ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br><br>' +
+            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- Banwai<br><br>' +
             "₹ " + formatToIndianCurrency(price.toFixed(2)) + '/-';
     } else {
         let grams = value * GRAMS_PER_TOLA;
@@ -189,6 +193,9 @@ function convert() {
 
         document.getElementById("result").innerHTML =
             "<strong>" + grams.toFixed(4) + " grams</strong><br><br>" +
+            "<h5>Bill</h5><br><br>" +
+            "  ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br><br>' +
+            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- Banwai<br><br>' +
             "₹" + formatToIndianCurrency(price.toFixed(2)) + '/-';
     }
 }
