@@ -4,31 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interest Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
-<body>
-    <h1>Interest Calculator</h1>
-    <form id="interestForm">
-        <label for="principal">Principal Amount:</label>
-        <input type="number" id="principal" name="principal" required>
-        <br>
-        <label for="rate">Annual Interest Rate (%):</label>
-        <input type="number" id="rate" name="rate" required>
-        <br>
-        <label for="time">Time (in years):</label>
-        <input type="number" id="time" name="time" required>
-        <br>
-        <button type="submit">Calculate Interest</button>
-    </form>
-    <h2 id="result"></h2>
-    <script>
-        document.getElementById('interestForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const principal = parseFloat(document.getElementById('principal').value);
-            const rate = parseFloat(document.getElementById('rate').value);
-            const time = parseFloat(document.getElementById('time').value);
-            const interest = (principal * rate * time) / 100;
-            document.getElementById('result').innerText = `Calculated Interest: $${interest.toFixed(2)}`;
-        });
-    </script>
+<body class="dark-theme">
+    <header>
+        <h1>Interest Calculator</h1>
+        <nav>
+            <ul>
+                <li><a href="#calculate" class="active">Calculate</a></li>
+                <li><a href="#history">History</a></li>
+                <li><a href="#how-it-works">How it Works</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="calculate">
+            <h2>Calculate Interest</h2>
+            <form id="interest-form">
+                <label for="principal">Principal Amount:</label>
+                <input type="number" id="principal" required>
+                <label for="rate">Interest Rate (%):</label>
+                <input type="number" id="rate" required>
+                <label for="time">Time (years):</label>
+                <input type="number" id="time" required>
+                <fieldset>
+                    <legend>Type of Interest</legend>
+                    <input type="radio" id="simple" name="interest-type" value="simple" checked>
+                    <label for="simple">Simple Interest</label>
+                    <input type="radio" id="compound" name="interest-type" value="compound">
+                    <label for="compound">Compound Interest</label>
+                </fieldset>
+                <button type="submit">Calculate</button>
+            </form>
+            <div id="result"></div>
+        </section>
+        <section id="history">
+            <h2>Calculation History</h2>
+            <ul id="history-list"></ul>
+        </section>
+        <section id="how-it-works">
+            <h2>How it Works</h2>
+            <p>This calculator allows you to compute simple and compound interest based on the principal amount, interest rate, and time.</p>
+        </section>
+    </main>
+    <footer>
+        <p>© 2026 Interest Calculator</p>
+    </footer>
 </body>
 </html>
