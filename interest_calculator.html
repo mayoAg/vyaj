@@ -1,55 +1,788 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interest Calculator</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Interest Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f14;
+    --surface: #1a1a24;
+    --surface2: #22222f;
+    --surface3: #2a2a3a;
+    --accent: #f0c040;
+    --accent2: #e07830;
+    --accent3: #50d0a0;
+    --text: #f0ede8;
+    --text2: #a0a0b8;
+    --text3: #606080;
+    --border: #2e2e42;
+    --red: #e05060;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+  /* Status bar */
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+  }
+  /* Header */
+  .header {
+    padding: 8px 20px 16px;
+    background: linear-gradient(180deg, #1a1a24 0%, transparent 100%);
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .header h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .header p { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 8px;
+    padding: 0 20px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #0f0f14;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Content */
+  .content { padding: 0 16px 100px; }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text3);
+    margin-bottom: 14px;
+  }
+
+  /* Input groups */
+  .input-group { margin-bottom: 14px; }
+  .input-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .input-wrap {
+    display: flex; align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .input-wrap:focus-within { border-color: var(--accent); }
+  .input-prefix, .input-suffix {
+    padding: 0 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 700;
+    background: var(--surface3);
+    height: 46px;
+    display: flex; align-items: center;
+    border-right: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .input-suffix { border-right: none; border-left: 1px solid var(--border); }
+  .input-wrap input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0 14px;
+    height: 46px;
+    font-size: 16px;
+    font-family: 'Space Mono', monospace;
+    color: var(--text);
+    font-weight: 400;
+    width: 100%;
+  }
+  .input-wrap input::placeholder { color: var(--text3); font-size: 13px; }
+
+  /* Row of 2 */
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Calculate button */
+  .calc-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f0f14;
+    cursor: pointer;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .calc-btn::after {
+    content: '→';
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    font-size: 18px;
+  }
+
+  /* Result cards */
+  .result-section { animation: slideUp 0.4s ease; }
+  .result-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .result-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .result-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge-days { background: #1a2a1a; color: var(--accent3); }
+  .badge-months { background: #2a1a0a; color: var(--accent2); }
+  .badge-full { background: #2a2a0a; color: var(--accent); }
+
+  /* Big number card */
+  .big-result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 10px;
+  }
+  .big-result-card.highlight {
+    background: linear-gradient(135deg, #1e1a0a 0%, #1a1a24 100%);
+    border-color: var(--accent);
+  }
+  .big-result-card.green { background: linear-gradient(135deg, #0a1e14 0%, #1a1a24 100%); border-color: var(--accent3); }
+  .big-result-card.orange { background: linear-gradient(135deg, #1e100a 0%, #1a1a24 100%); border-color: var(--accent2); }
+
+  .result-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .result-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .result-amount.green { color: var(--accent3); font-size: 24px; }
+  .result-amount.orange { color: var(--accent2); font-size: 24px; }
+  .result-sub {
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .result-sub span { color: var(--text2); font-weight: 500; }
+
+  /* 3-way interest for partial months */
+  .partial-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .partial-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .partial-card .p-label { font-size: 10px; color: var(--text3); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .partial-card .p-amount { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; color: var(--text); }
+  .partial-card .p-desc { font-size: 10px; color: var(--text3); margin-top: 4px; }
+  .partial-card.active-p { border-color: var(--accent); background: #1e1a0a; }
+  .partial-card.active-p .p-amount { color: var(--accent); }
+
+  /* Breakdown table */
+  .breakdown { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+  .breakdown-head { display: grid; grid-template-columns: 2fr 1fr 1fr; padding: 10px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .breakdown-head span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); }
+  .breakdown-row { display: grid; grid-template-columns: 2fr 1fr 1fr; padding: 10px 14px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row:hover { background: var(--surface2); }
+  .breakdown-row .br-period { font-size: 12px; color: var(--text2); font-weight: 500; }
+  .breakdown-row .br-rate { font-size: 12px; color: var(--text3); font-family: 'Space Mono', monospace; }
+  .breakdown-row .br-int { font-size: 13px; color: var(--accent); font-family: 'Space Mono', monospace; font-weight: 700; }
+  .breakdown-row.partial-row { background: #1a1a0d; }
+  .breakdown-row.partial-row .br-int { color: var(--accent2); }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 4px 0 14px; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text3);
+  }
+  .empty .e-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; line-height: 1.6; }
+
+  /* Floating label on top inputs */
+  .section-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 4px 0 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text3);
+    font-weight: 700;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* History tab */
+  .history-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .history-item:active { border-color: var(--accent); }
+  .history-item .hi-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .history-item .hi-principal { font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text); }
+  .history-item .hi-interest { font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); }
+  .history-item .hi-meta { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .clear-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--red);
+    border-radius: var(--radius-sm);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+  }
+
+  /* Info chip */
+  .info-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a50;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .info-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: #8080ff; flex-shrink: 0; }
+
+  /* Toggle row */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .toggle-row label { font-size: 13px; color: var(--text2); }
+  .toggle {
+    width: 44px; height: 24px;
+    background: var(--surface3);
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: 1px solid var(--border);
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: white;
+    top: 2px; left: 2px;
+    transition: transform 0.2s;
+  }
+  .toggle.on::after { transform: translateX(20px); }
+</style>
 </head>
-<body class="dark-theme">
-    <header>
-        <h1>Interest Calculator</h1>
-        <nav>
-            <ul>
-                <li><a href="#calculate" class="active">Calculate</a></li>
-                <li><a href="#history">History</a></li>
-                <li><a href="#how-it-works">How it Works</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="calculate">
-            <h2>Calculate Interest</h2>
-            <form id="interest-form">
-                <label for="principal">Principal Amount:</label>
-                <input type="number" id="principal" required>
-                <label for="rate">Interest Rate (%):</label>
-                <input type="number" id="rate" required>
-                <label for="time">Time (years):</label>
-                <input type="number" id="time" required>
-                <fieldset>
-                    <legend>Type of Interest</legend>
-                    <input type="radio" id="simple" name="interest-type" value="simple" checked>
-                    <label for="simple">Simple Interest</label>
-                    <input type="radio" id="compound" name="interest-type" value="compound">
-                    <label for="compound">Compound Interest</label>
-                </fieldset>
-                <button type="submit">Calculate</button>
-            </form>
-            <div id="result"></div>
-        </section>
-        <section id="history">
-            <h2>Calculation History</h2>
-            <ul id="history-list"></ul>
-        </section>
-        <section id="how-it-works">
-            <h2>How it Works</h2>
-            <p>This calculator allows you to compute simple and compound interest based on the principal amount, interest rate, and time.</p>
-        </section>
-    </main>
-    <footer>
-        <p>© 2026 Interest Calculator</p>
-    </footer>
+<body>
+
+<div class="status-bar">
+  <span id="clock">12:00</span>
+  <span>▐▌▐▌▐▌ ◉</span>
+</div>
+
+<div class="header">
+  <h1>₹ INTEREST CALC</h1>
+  <p>Monthly rate · Simple & Compound</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('calc')">Calculate</div>
+  <div class="tab" onclick="switchTab('history')">History</div>
+  <div class="tab" onclick="switchTab('info')">How it works</div>
+</div>
+
+<div class="content">
+
+  <!-- CALCULATOR TAB -->
+  <div id="tab-calc">
+    <div class="card">
+      <div class="card-title">Loan Details</div>
+
+      <div class="input-group">
+        <label>Principal Amount</label>
+        <div class="input-wrap">
+          <span class="input-prefix">₹</span>
+          <input type="number" id="principal" placeholder="0.00" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Monthly Interest Rate</label>
+        <div class="input-wrap">
+          <input type="number" id="rate" placeholder="2" inputmode="decimal">
+          <span class="input-suffix">%/mo</span>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="input-group">
+          <label>Start Date</label>
+          <div class="input-wrap">
+            <input type="date" id="startDate">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>End Date</label>
+          <div class="input-wrap">
+            <input type="date" id="endDate">
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <label>Show compound interest (yearly)</label>
+        <div class="toggle on" id="compoundToggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">CALCULATE INTEREST</button>
+
+    <div id="results"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" style="display:none">
+    <div id="historyList"></div>
+  </div>
+
+  <!-- INFO TAB -->
+  <div id="tab-info" style="display:none">
+    <div class="card">
+      <div class="card-title">Calculation Rules</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+        <p style="margin-bottom:12px;padding:12px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent)">
+          <strong style="color:var(--accent)">Monthly Interest</strong><br>
+          Interest = Principal × Rate%
+        </p>
+        <p style="margin-bottom:12px;padding:12px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent3)">
+          <strong style="color:var(--accent3)">Simple Interest (yearly+)</strong><br>
+          SI = P × R × T<br>
+          <span style="color:var(--text3);font-size:11px">T = total months / 12</span>
+        </p>
+        <p style="margin-bottom:12px;padding:12px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent2)">
+          <strong style="color:var(--accent2)">Compound Interest (yearly+)</strong><br>
+          CI = P × (1 + R/12)^months − P<br>
+          <span style="color:var(--text3);font-size:11px">Compounded monthly</span>
+        </p>
+        <p style="padding:12px;background:var(--surface2);border-radius:8px;border-left:3px solid #8080ff">
+          <strong style="color:#a0a0ff">Partial Month Rule</strong><br>
+          When month is incomplete, 3 options shown:<br>
+          1. <strong>Exact days</strong> — pro-rated by days<br>
+          2. <strong>Min 15 days</strong> — charged as half month<br>
+          3. <strong>Full month</strong> — charged as complete month
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let history = JSON.parse(localStorage.getItem('interestHistory') || '[]');
+
+// Set today's date defaults
+const today = new Date();
+document.getElementById('endDate').value = today.toISOString().split('T')[0];
+const monthAgo = new Date(today);
+monthAgo.setMonth(monthAgo.getMonth() - 3);
+document.getElementById('startDate').value = monthAgo.toISOString().split('T')[0];
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+function switchTab(t) {
+  ['calc','history','info'].forEach(x => {
+    document.getElementById('tab-'+x).style.display = x === t ? 'block' : 'none';
+    document.querySelectorAll('.tab')[['calc','history','info'].indexOf(x)].classList.toggle('active', x === t);
+  });
+  if (t === 'history') renderHistory();
+}
+
+function fmt(n) {
+  return '₹' + Number(n.toFixed(2)).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtNum(n) {
+  return Number(n.toFixed(2)).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function calculate() {
+  const P = parseFloat(document.getElementById('principal').value);
+  const R = parseFloat(document.getElementById('rate').value);
+  const startStr = document.getElementById('startDate').value;
+  const endStr = document.getElementById('endDate').value;
+  const showCompound = document.getElementById('compoundToggle').classList.contains('on');
+
+  if (!P || !R || !startStr || !endStr) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  if (end <= start) { alert('End date must be after start date'); return; }
+
+  // Calculate full months and remaining days
+  let months = 0;
+  let current = new Date(start);
+  
+  // Count full months
+  while (true) {
+    const next = new Date(current);
+    next.setMonth(next.getMonth() + 1);
+    if (next <= end) {
+      months++;
+      current = next;
+    } else break;
+  }
+
+  // Remaining days
+  const remainMs = end - current;
+  const remainDays = Math.floor(remainMs / (1000*60*60*24));
+  
+  // Days in the partial month
+  const partialMonthEnd = new Date(current);
+  partialMonthEnd.setMonth(partialMonthEnd.getMonth() + 1);
+  const daysInPartialMonth = Math.floor((partialMonthEnd - current) / (1000*60*60*24));
+
+  const totalDays = Math.floor((end - start) / (1000*60*60*24));
+  const totalMonths = months + remainDays / daysInPartialMonth;
+  const isOverYear = totalMonths >= 12;
+
+  // Interest calculations
+  const monthlyInterestPerMonth = P * R / 100;
+  const fullMonthsInterest = monthlyInterestPerMonth * months;
+
+  // Partial month options
+  let partialExact = 0, partialMin15 = 0, partialFull = 0;
+  if (remainDays > 0) {
+    partialExact = monthlyInterestPerMonth * (remainDays / daysInPartialMonth);
+    partialMin15 = remainDays < 15 ? (monthlyInterestPerMonth * 0.5) : partialExact;
+    partialFull = monthlyInterestPerMonth;
+  }
+
+  const totalExact = fullMonthsInterest + partialExact;
+  const totalMin15 = fullMonthsInterest + partialMin15;
+  const totalFull = fullMonthsInterest + partialFull;
+
+  // Simple & Compound for over-year
+  const T = totalMonths / 12;
+  const SI = P * (R / 100) * 12 * T; // SI using monthly rate annualized
+  // Actually: SI = P * monthlyRate * totalMonths
+  const siTotal = P * (R / 100) * totalMonths;
+  const ciTotal = P * Math.pow(1 + R/100, totalMonths) - P;
+
+  // Build monthly breakdown
+  let breakdownRows = [];
+  let bd = new Date(start);
+  for (let m = 0; m < months; m++) {
+    const mEnd = new Date(bd);
+    mEnd.setMonth(mEnd.getMonth() + 1);
+    const mLabel = bd.toLocaleDateString('en-IN',{month:'short',year:'2-digit'}) + '–' + mEnd.toLocaleDateString('en-IN',{month:'short',year:'2-digit'});
+    breakdownRows.push({period: mLabel, days: daysInPartialMonth, interest: monthlyInterestPerMonth, isPartial: false});
+    bd = mEnd;
+  }
+  if (remainDays > 0) {
+    const mLabel = bd.toLocaleDateString('en-IN',{month:'short',day:'numeric'}) + ' (+'+ remainDays +'d)';
+    breakdownRows.push({period: mLabel, days: remainDays, interestExact: partialExact, interestMin15: partialMin15, interestFull: partialFull, isPartial: true, daysInMonth: daysInPartialMonth});
+  }
+
+  // Save to history
+  const record = {
+    date: new Date().toLocaleDateString('en-IN'),
+    principal: P, rate: R,
+    startDate: startStr, endDate: endStr,
+    totalDays, months, remainDays,
+    totalExact, totalMin15, totalFull,
+    siTotal, ciTotal, isOverYear
+  };
+  history.unshift(record);
+  if (history.length > 20) history = history.slice(0,20);
+  localStorage.setItem('interestHistory', JSON.stringify(history));
+
+  // Render results
+  renderResults({P, R, totalDays, months, remainDays, daysInPartialMonth,
+    fullMonthsInterest, partialExact, partialMin15, partialFull,
+    totalExact, totalMin15, totalFull,
+    siTotal, ciTotal, isOverYear, showCompound,
+    breakdownRows, start, end, totalMonths});
+}
+
+function renderResults(d) {
+  const res = document.getElementById('results');
+  
+  let html = `<div class="result-section">`;
+
+  // Summary
+  html += `<div class="section-divider">SUMMARY</div>`;
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Duration</div>
+      <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--text)">${d.months}m ${d.remainDays}d</div>
+      <div style="font-size:10px;color:var(--text3)">${d.totalDays} total days</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Full Months</div>
+      <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--text)">${fmt(d.fullMonthsInterest)}</div>
+      <div style="font-size:10px;color:var(--text3)">${d.months} × ${fmt(d.fullMonthsInterest/Math.max(d.months,1))}/mo</div>
+    </div>
+  </div>`;
+
+  // Partial month section
+  if (d.remainDays > 0) {
+    html += `<div class="section-divider">PARTIAL MONTH (+${d.remainDays} days of ${d.daysInPartialMonth})</div>`;
+    html += `<div class="partial-grid">
+      <div class="partial-card ${d.remainDays > 0 ? 'active-p' : ''}">
+        <div class="p-label">Exact Days</div>
+        <div class="p-amount">${fmtNum(d.partialExact)}</div>
+        <div class="p-desc">${d.remainDays}/${d.daysInPartialMonth} days</div>
+      </div>
+      <div class="partial-card ${d.remainDays < 15 ? 'active-p' : ''}">
+        <div class="p-label">Min 15 Days</div>
+        <div class="p-amount">${fmtNum(d.partialMin15)}</div>
+        <div class="p-desc">${d.remainDays < 15 ? '½ month charged' : 'same as exact'}</div>
+      </div>
+      <div class="partial-card">
+        <div class="p-label">Full Month</div>
+        <div class="p-amount">${fmtNum(d.partialFull)}</div>
+        <div class="p-desc">even 1 day = 1 mo</div>
+      </div>
+    </div>`;
+  }
+
+  // Totals
+  html += `<div class="section-divider">TOTAL INTEREST</div>`;
+  html += `<div class="big-result-card highlight">
+    <div class="result-label">Exact Days Calculation</div>
+    <div class="result-amount">${fmt(d.totalExact)}</div>
+    <div class="result-sub">Principal + Interest = <span>${fmt(d.P + d.totalExact)}</span></div>
+  </div>`;
+
+  if (d.remainDays > 0) {
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div class="big-result-card green" style="margin:0;">
+        <div class="result-label">Min 15-day rule</div>
+        <div class="result-amount green">${fmt(d.totalMin15)}</div>
+        <div class="result-sub">Total: <span>${fmt(d.P + d.totalMin15)}</span></div>
+      </div>
+      <div class="big-result-card orange" style="margin:0;">
+        <div class="result-label">Full month rule</div>
+        <div class="result-amount orange">${fmt(d.totalFull)}</div>
+        <div class="result-sub">Total: <span>${fmt(d.P + d.totalFull)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  // Simple & Compound (if over 1 year)
+  if (d.isOverYear && d.showCompound) {
+    html += `<div class="section-divider">YEARLY COMPARISON (${d.totalMonths.toFixed(1)} months)</div>`;
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="background:var(--surface);border:1px solid var(--accent3);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;color:var(--accent3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Simple Interest</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--accent3)">${fmt(d.siTotal)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">P×R%×months</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--accent2);border-radius:10px;padding:14px;">
+        <div style="font-size:10px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Compound Interest</div>
+        <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--accent2)">${fmt(d.ciTotal)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">Monthly compounded</div>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Extra via Compounding</div>
+      <div style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:var(--accent2)">+${fmt(d.ciTotal - d.siTotal)}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">${((d.ciTotal/d.siTotal - 1)*100).toFixed(1)}% more than simple interest</div>
+    </div>`;
+  } else if (!d.isOverYear && d.showCompound) {
+    html += `<div class="info-chip" style="margin-bottom:12px;display:flex;width:100%;"><div class="dot"></div>Duration under 1 year — compound & simple interest shown once ≥12 months</div>`;
+  }
+
+  // Monthly breakdown
+  html += `<div class="section-divider">MONTH-BY-MONTH</div>`;
+  html += `<div class="breakdown">
+    <div class="breakdown-head">
+      <span>Period</span>
+      <span>Rate</span>
+      <span>Interest</span>
+    </div>`;
+  
+  let runningTotal = 0;
+  d.breakdownRows.forEach(row => {
+    if (!row.isPartial) {
+      runningTotal += row.interest;
+      html += `<div class="breakdown-row">
+        <span class="br-period">${row.period}</span>
+        <span class="br-rate">${d.R}%</span>
+        <span class="br-int">${fmtNum(row.interest)}</span>
+      </div>`;
+    } else {
+      html += `<div class="breakdown-row partial-row">
+        <span class="br-period">${row.period}</span>
+        <span class="br-rate">${d.R}%</span>
+        <span class="br-int">${fmtNum(row.interestExact)} – ${fmtNum(row.interestFull)}</span>
+      </div>`;
+    }
+  });
+  html += `</div>`;
+
+  html += `</div>`;
+  res.innerHTML = html;
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!history.length) {
+    el.innerHTML = `<div class="empty"><div class="e-icon">📋</div><p>No calculations yet.<br>Use the Calculate tab to get started.</p></div>`;
+    return;
+  }
+  let html = `<button class="clear-btn" onclick="clearHistory()">Clear All History</button>`;
+  history.forEach((h,i) => {
+    html += `<div class="history-item" onclick="loadHistory(${i})">
+      <div class="hi-top">
+        <div>
+          <div class="hi-principal">${fmt(h.principal)}</div>
+          <div class="hi-meta">${h.rate}%/mo · ${h.startDate} → ${h.endDate}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="hi-interest">${fmt(h.totalExact)}</div>
+          <div class="hi-meta">${h.months}m ${h.remainDays}d · ${h.date}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function clearHistory() {
+  if (confirm('Clear all calculation history?')) {
+    history = [];
+    localStorage.setItem('interestHistory', '[]');
+    renderHistory();
+  }
+}
+
+function loadHistory(i) {
+  const h = history[i];
+  document.getElementById('principal').value = h.principal;
+  document.getElementById('rate').value = h.rate;
+  document.getElementById('startDate').value = h.startDate;
+  document.getElementById('endDate').value = h.endDate;
+  switchTab('calc');
+  calculate();
+}
+</script>
 </body>
 </html>
