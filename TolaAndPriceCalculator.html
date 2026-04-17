@@ -150,11 +150,11 @@ function setMode(m) {
 }
 
 function updatePriceInfo() {
-    let rate = formatToIndianCurrency(parseFloat(document.getElementById("goldRate").value));
-    let per10g = formatToIndianCurrency(rate * 10);
+    let rate = parseFloat(document.getElementById("goldRate").value);
+    let per10g = rate * 10;
 
     document.getElementById("priceInfo").innerHTML = 
-        "₹" + rate.toFixed(2) + "/g  |  ₹" + per10g.toFixed(0) + "/10g";
+        "₹ " + formatToIndianCurrency(rate.toFixed(2)) + "/g  |  ₹ " + formatToIndianCurrency(per10g.toFixed(0)) + "/10g";
 }
 
 function convert() {
@@ -177,7 +177,7 @@ function convert() {
         document.getElementById("result").innerHTML =
             "<strong>" + totalTola.toFixed(4) + " Tola</strong><br>" +
             tola + " Tola " + anna + " Anna " + ratti + " Ratti<br><br>" +
-            "₹" + formatToIndianCurrency(price.toFixed(2));
+            "₹ " + formatToIndianCurrency(price.toFixed(2));
     } else {
         let grams = value * GRAMS_PER_TOLA;
         let price = grams * rate;
