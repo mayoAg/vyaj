@@ -158,7 +158,7 @@ function updatePriceInfo() {
     let per10g = rate * 10;
 
     document.getElementById("priceInfo").innerHTML = 
-        "₹ " + formatToIndianCurrency(rate.toFixed(2)) + "/g  |  ₹ " + formatToIndianCurrency(per10g.toFixed(0)) + "/10g";
+        "Rate:  ₹ " + formatToIndianCurrency(rate.toFixed(2)) + "/g  |  ₹ " + formatToIndianCurrency(per10g.toFixed(0)) + "/10g";
 }
 
 function convert() {
