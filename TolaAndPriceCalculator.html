@@ -186,7 +186,8 @@ function convert() {
             "<h5>Bill</h5><br><br>" +
             "  ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br><br>' +
             "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- Banwai<br><br>' +
-            "₹ " + formatToIndianCurrency(price.toFixed(2)) + '/-';
+            "-----------------------------" +
+            "₹ " + formatToIndianCurrency(price.toFixed(2)) + '/- Total';
     } else {
         let grams = value * GRAMS_PER_TOLA;
         let price = (grams * rate) + banwai;
@@ -196,7 +197,8 @@ function convert() {
             "<h5>Bill</h5><br><br>" +
             "  ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br><br>' +
             "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- Banwai<br><br>' +
-            "₹" + formatToIndianCurrency(price.toFixed(2)) + '/-';
+            "-----------------------------" +
+            "₹" + formatToIndianCurrency(price.toFixed(2)) + '/- Total';
     }
 }
 
