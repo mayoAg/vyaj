@@ -182,10 +182,10 @@ function convert() {
 
         document.getElementById("result").innerHTML =
             "<strong>" + totalTola.toFixed(4) + " Tola</strong><br>" +
-            tola + " Tola " + anna + " Anna " + ratti + " Ratti<br><br>" +
+            tola + " Tola " + anna + " Anna " + ratti + " Ratti<br>" +
             "<h5>Bill</h5>" +
             "    ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br>' +
-            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- <span>Banwai<span><br><br>' +
+            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- <span>Banwai<span><br>' +
             "-----------------------------<br>" +
             "₹ " + formatToIndianCurrency(price.toFixed(2)) + '/- Total';
     } else {
@@ -193,10 +193,10 @@ function convert() {
         let price = (grams * rate) + banwai;
 
         document.getElementById("result").innerHTML =
-            "<strong>" + grams.toFixed(4) + " grams</strong><br><br>" +
+            "<strong>" + grams.toFixed(4) + " grams</strong><br>" +
             "<h5>Bill</h5>" +
             "    ₹ " + formatToIndianCurrency(goldPrice.toFixed(2)) + '/-<br>' +
-            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- <span>Banwai<span><br><br>' +
+            "+ ₹ " + formatToIndianCurrency(banwai.toFixed(2)) + '/- <span>Banwai<span><br>' +
             "-----------------------------<br>" +
             "₹" + formatToIndianCurrency(price.toFixed(2)) + '/- Total';
     }
