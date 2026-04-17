@@ -132,7 +132,7 @@ let mode = "g";
 const GRAMS_PER_TOLA = 11.6638038;
 
 function formatToIndianCurrency(amount) {
-    return new Intl.NumberFormat('en-IN').format(amount) + '/-';
+    return new Intl.NumberFormat('en-IN').format(amount);
 }
 function setMode(m) {
     mode = m;
@@ -184,7 +184,7 @@ function convert() {
 
         document.getElementById("result").innerHTML =
             "<strong>" + grams.toFixed(4) + " grams</strong><br><br>" +
-            "₹" + formatToIndianCurrency(price.toFixed(2));
+            "₹" + formatToIndianCurrency(price.toFixed(2)) + '/-';
     }
 }
 
